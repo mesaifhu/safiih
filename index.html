@@ -560,11 +560,14 @@ body {
 .bnav-btn:active { transform: scale(0.94); }
 
 /* ══════════════════════════════════════
-   SECTION PANELS
+   SECTION PANEL LAYOUT (non-chat tabs)
 ══════════════════════════════════════ */
 .section-panel {
-  flex: 1; overflow-y: auto; padding: 0;
-  display: flex; flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 .section-panel::-webkit-scrollbar { width: 3px; }
 .section-panel::-webkit-scrollbar-thumb { background: var(--border); }
@@ -576,20 +579,27 @@ body {
   border-bottom: 1px solid var(--border2);
   z-index: 10;
 }
-.section-title { font-size: 1.2rem; font-weight: 600; color: var(--ink); }
-.section-sub { font-size: 0.72rem; color: var(--ink-dim); margin-top: 3px; }
-
-/* ══════════════════════════════════════
-   DIWAN TAB
-══════════════════════════════════════ */
-.diwan-scrollable {
-  padding: 16px; display: flex; flex-direction: column; gap: 12px;
+.section-title {
+  font-size: 1.2rem; font-weight: 600; color: var(--ink);
+}
+.section-sub {
+  font-size: 0.72rem; color: var(--ink-dim); margin-top: 3px;
 }
 
+/* ══════════════════════════════════════
+   SAIF DIWAN TAB
+══════════════════════════════════════ */
+.diwan-scrollable {
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 12px;
+}
 .diwan-hero {
   background: linear-gradient(135deg, rgba(212,168,67,0.08) 0%, rgba(192,132,252,0.06) 100%);
   border: 1px solid var(--border);
-  border-radius: 20px; padding: 24px 20px; text-align: center; margin-bottom: 4px;
+  border-radius: 20px;
+  padding: 24px 20px;
+  text-align: center;
+  margin-bottom: 4px;
 }
 .diwan-name-big {
   font-family: 'Noto Nastaliq Urdu', serif;
@@ -598,19 +608,20 @@ body {
 }
 .diwan-poet-info {
   font-size: 0.75rem; color: var(--ink-dim);
-  letter-spacing: 0.1em; text-transform: uppercase; margin-top: 8px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  margin-top: 8px;
 }
-
 .diwan-section-label {
   font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--gold-dim); font-family: 'JetBrains Mono', monospace;
   display: flex; align-items: center; gap: 8px; padding: 4px 0;
 }
 .diwan-section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
 .diwan-card {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 16px; padding: 16px; transition: border-color 0.2s, background 0.2s;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 16px;
+  transition: border-color 0.2s, background 0.2s;
 }
 .diwan-card:active { background: var(--bg3); }
 .diwan-card-meta {
@@ -619,174 +630,318 @@ body {
   margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
 }
 .diwan-card-meta .theme-tag {
-  background: rgba(212,168,67,0.08); border: 1px solid rgba(212,168,67,0.15);
+  background: rgba(212,168,67,0.08);
+  border: 1px solid rgba(212,168,67,0.15);
   border-radius: 10px; padding: 2px 8px; color: var(--gold-dim);
 }
 .diwan-text-urdu {
   font-family: 'Noto Nastaliq Urdu', serif;
-  direction: rtl; font-size: 1.05rem; color: var(--cream); line-height: 2.1;
+  direction: rtl; font-size: 1.05rem;
+  color: var(--cream); line-height: 2.1;
 }
 .diwan-text-roman {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 0.98rem; color: var(--ink); line-height: 1.95; font-style: italic;
+  font-size: 0.98rem; color: var(--ink);
+  line-height: 1.95; font-style: italic;
 }
-.diwan-analyze-btn {
-  margin-top: 12px; padding: 7px 14px;
-  background: rgba(212,168,67,0.08); border: 1px solid rgba(212,168,67,0.2);
-  border-radius: 20px; color: var(--gold);
+.sher-block + .sher-divider,
+.diwan-card .diwan-text-urdu + .diwan-text-urdu,
+.diwan-card .diwan-text-roman + .diwan-text-roman {
+  margin-top: 0.6rem;
+}
+.diwan-note {
+  font-size: 0.73rem; color: var(--ink-dim);
+  margin-top: 10px; font-style: italic; line-height: 1.5;
+  padding-top: 10px; border-top: 1px solid var(--border2);
+}
+.diwan-actions { display: flex; gap: 8px; margin-top: 12px; }
+.analyze-btn {
+  flex: 1;
+  background: linear-gradient(135deg, rgba(212,168,67,0.12), rgba(192,132,252,0.08));
+  border: 1px solid rgba(212,168,67,0.25);
+  border-radius: 12px; padding: 9px 14px;
+  color: var(--gold); font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.78rem; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.analyze-btn:active { transform: scale(0.97); }
+.analyze-btn:hover { background: linear-gradient(135deg, rgba(212,168,67,0.2), rgba(192,132,252,0.15)); }
+.sher-divider { height: 1px; background: var(--border2); margin: 10px 0; }
+
+/* ══════════════════════════════════════
+   BROWSE POETS TAB
+══════════════════════════════════════ */
+.browse-content { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+.search-bar-wrap {
+  background: var(--bg2);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  display: flex; align-items: center;
+  padding: 0 14px; gap: 8px;
+  transition: border-color 0.2s;
+}
+.search-bar-wrap:focus-within { border-color: rgba(212,168,67,0.35); }
+.search-bar-icon { color: var(--ink-dim); font-size: 0.9rem; flex-shrink: 0; }
+.search-bar-input {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--ink); font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem; padding: 12px 0;
+}
+.search-bar-input::placeholder { color: rgba(224,224,224,0.2); }
+.filter-row {
+  display: flex; gap: 8px; overflow-x: auto;
+  scrollbar-width: none; padding-bottom: 2px;
+}
+.filter-row::-webkit-scrollbar { display: none; }
+.filter-chip {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 20px; padding: 6px 14px;
+  font-size: 0.75rem; color: var(--ink-dim);
+  cursor: pointer; white-space: nowrap;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all 0.2s;
+}
+.filter-chip.active { background: var(--gold-glow); border-color: rgba(212,168,67,0.4); color: var(--gold); }
+.poet-pills-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+.poet-pill {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 16px; padding: 4px 12px;
+  font-size: 0.72rem; color: var(--ink-dim);
+  cursor: pointer; transition: all 0.2s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.poet-pill.active, .poet-pill:active {
+  background: var(--gold-glow); color: var(--gold);
+  border-color: rgba(212,168,67,0.4);
+}
+.browse-cards { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.browse-card {
+  background: linear-gradient(135deg, var(--bg2) 0%, rgba(22,18,12,0.95) 100%);
+  border: 1px solid rgba(212,168,67,0.12);
+  border-radius: 18px; padding: 16px 18px;
+  transition: border-color 0.25s, transform 0.15s, box-shadow 0.25s;
+  cursor: default; position: relative; overflow: hidden;
+}
+.browse-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at top right, rgba(212,168,67,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+.browse-card:hover { border-color: rgba(212,168,67,0.28); transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+.browse-card:active { border-color: rgba(212,168,67,0.4); transform: translateY(0); }
+.browse-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px; gap: 8px;
+}
+.browse-poet-name {
+  font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--gold); font-family: 'JetBrains Mono', monospace; opacity: 0.85;
+}
+.browse-script-tag {
+  font-size: 0.6rem; padding: 2px 8px; border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace; letter-spacing: 0.05em; border: 1px solid;
+}
+.browse-script-tag.script-urdu {
+  color: rgba(212,168,67,0.7); border-color: rgba(212,168,67,0.2);
+  background: rgba(212,168,67,0.06);
+  font-family: 'Noto Nastaliq Urdu', serif; font-size: 0.7rem;
+}
+.browse-script-tag.script-roman {
+  color: rgba(180,160,140,0.6); border-color: rgba(180,160,140,0.15);
+  background: rgba(180,160,140,0.04); font-style: italic;
+}
+.browse-poem-text { font-size: 0.9rem; color: var(--cream); line-height: 1.9; }
+.browse-poem-text.urdu { font-family: 'Noto Nastaliq Urdu', serif; direction: rtl; font-size: 1rem; line-height: 2.2; text-align: right; }
+.browse-poem-text.roman { font-family: 'Cormorant Garamond', serif; font-style: italic; }
+.browse-misra2 { opacity: 0.8; margin-top: 2px; }
+.browse-use-btn {
+  margin-top: 12px; background: none;
+  border: 1px solid rgba(212,168,67,0.2); border-radius: 10px;
+  padding: 7px 14px; color: rgba(212,168,67,0.6);
   font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.72rem;
   cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 5px; letter-spacing: 0.03em;
 }
-.diwan-analyze-btn:hover { background: rgba(212,168,67,0.15); }
+.browse-use-btn:hover { border-color: rgba(212,168,67,0.5); color: var(--gold); background: rgba(212,168,67,0.06); }
+.browse-use-btn:active { border-color: rgba(212,168,67,0.7); color: var(--gold); }
 
 /* ══════════════════════════════════════
-   BROWSE TAB
+   TRANSLITERATE TAB
 ══════════════════════════════════════ */
-.browse-scroll { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-
-.ghazal-card {
+.translit-content { padding: 14px 16px; display: flex; flex-direction: column; gap: 14px; }
+.field-label {
+  font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold-dim); font-family: 'JetBrains Mono', monospace; margin-bottom: 6px;
+}
+.dir-toggle {
+  display: flex; background: var(--bg2);
+  border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+}
+.dt-btn {
+  flex: 1; padding: 10px 8px;
+  background: none; border: none; cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.78rem; color: var(--ink-dim); transition: all 0.2s;
+  border-right: 1px solid var(--border);
+}
+.dt-btn:last-child { border-right: none; }
+.dt-btn.active { background: var(--gold-glow); color: var(--gold); }
+.simple-textarea {
+  width: 100%; background: var(--bg2); border: 1.5px solid var(--border);
+  border-radius: 14px; padding: 14px; color: var(--ink);
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.92rem;
+  resize: none; outline: none; min-height: 88px;
+  transition: border-color 0.2s; line-height: 1.65;
+}
+.simple-textarea:focus { border-color: rgba(212,168,67,0.4); }
+.action-btn {
+  background: linear-gradient(135deg, var(--gold), #b8860b);
+  border: none; color: #000; padding: 12px 24px;
+  border-radius: 12px; cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.88rem; font-weight: 600;
+  transition: all 0.2s; align-self: flex-start;
+}
+.action-btn:active { transform: scale(0.97); }
+.result-box {
   background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 16px; padding: 16px;
-  cursor: pointer; transition: all 0.22s;
-}
-.ghazal-card:hover { border-color: rgba(212,168,67,0.3); background: var(--bg3); }
-.ghazal-card:active { transform: scale(0.99); }
-.ghazal-card-poet {
-  font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--gold-dim); font-family: 'JetBrains Mono', monospace; margin-bottom: 8px;
-}
-.ghazal-card-text {
-  font-size: 0.92rem; color: var(--cream); line-height: 2; white-space: pre-line;
-}
-.ghazal-card-text.urdu {
-  font-family: 'Noto Nastaliq Urdu', serif;
-  direction: rtl; text-align: right; font-size: 1rem; line-height: 2.3;
-}
-.ghazal-card-text.roman {
-  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  border-radius: 14px; padding: 14px;
+  font-size: 0.92rem; color: var(--ink); line-height: 1.8; min-height: 56px;
 }
 
 /* ══════════════════════════════════════
-   DICT & TRANSLIT
+   DICTIONARY TAB
 ══════════════════════════════════════ */
-.search-box-wrap {
-  padding: 0 14px 12px; position: sticky; top: 56px;
-  background: var(--bg); z-index: 9;
+.dict-content { padding: 12px 16px; display: flex; flex-direction: column; gap: 12px; }
+.dict-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
 }
-.search-box {
-  width: 100%; padding: 10px 14px;
-  background: var(--bg3); border: 1px solid var(--border);
-  border-radius: 14px; color: var(--ink);
-  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem;
-  outline: none; transition: border-color 0.2s;
-}
-.search-box:focus { border-color: rgba(212,168,67,0.4); }
-.search-box::placeholder { color: var(--ink-dim); opacity: 0.5; }
-
-.dict-scroll { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 6px; }
-.dict-entry {
+.dict-card {
   background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 12px; padding: 12px 14px;
-  display: flex; gap: 12px; align-items: flex-start;
+  border-radius: 14px; padding: 12px; cursor: pointer; transition: all 0.2s;
 }
-.dict-urdu {
-  font-family: 'Noto Nastaliq Urdu', serif;
-  direction: rtl; font-size: 1.15rem; color: var(--gold);
-  min-width: 48px; text-align: right; line-height: 1.6; flex-shrink: 0;
-}
-.dict-roman { font-family: 'Cormorant Garamond', serif; font-size: 0.9rem; font-style: italic; color: var(--cream-dim); }
-.dict-meaning { font-size: 0.78rem; color: var(--ink-dim); line-height: 1.5; margin-top: 2px; }
-
-.translit-area { padding: 14px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
-.translit-card {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px;
-}
-.translit-label {
-  font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--gold-dim); font-family: 'JetBrains Mono', monospace;
-}
-.translit-input, .translit-output {
-  background: var(--bg3); border: 1px solid var(--border);
-  border-radius: 10px; padding: 10px 12px;
-  color: var(--ink); font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.88rem; line-height: 1.6; min-height: 80px;
-  resize: none; outline: none; width: 100%;
-}
-.translit-input:focus { border-color: rgba(212,168,67,0.3); }
-.translit-output {
-  font-family: 'Noto Nastaliq Urdu', serif;
-  direction: rtl; font-size: 1.05rem; line-height: 2; color: var(--cream);
-}
-.translit-btn {
-  padding: 10px 20px;
-  background: linear-gradient(135deg, rgba(212,168,67,0.15), rgba(212,168,67,0.08));
-  border: 1px solid rgba(212,168,67,0.3); border-radius: 12px;
-  color: var(--gold); font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.8rem; cursor: pointer; transition: all 0.2s; align-self: flex-start;
-}
-.translit-btn:hover { background: rgba(212,168,67,0.22); }
+.dict-card:active { background: var(--bg3); border-color: rgba(212,168,67,0.3); }
+.dc-urdu { font-family: 'Noto Nastaliq Urdu', serif; font-size: 1.1rem; color: var(--gold); direction: rtl; }
+.dc-roman { font-size: 0.68rem; color: var(--ink-dim); font-family: 'JetBrains Mono', monospace; margin: 3px 0; }
+.dc-meaning { font-size: 0.75rem; color: var(--ink); line-height: 1.4; }
 
 /* ══════════════════════════════════════
-   TOAST
+   TAQTI PANEL
+══════════════════════════════════════ */
+.taqti-panel { display: none !important; }
+.stat-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.stat-pill { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; display: flex; flex-direction: column; align-items: center; }
+.stat-num { font-size: 1.1rem; color: var(--gold); font-family: 'Cormorant Garamond', serif; }
+.stat-lbl { font-size: 0.56rem; color: var(--ink-dim); letter-spacing: 0.08em; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; }
+.behr-card { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 10px; padding: 10px; margin-bottom: 6px; }
+.behr-card.top { border-color: rgba(212,168,67,0.35); }
+.bc-name { font-size: 0.85rem; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+.bc-urdu { font-family: 'Noto Nastaliq Urdu', serif; font-size: 0.72rem; color: var(--gold-dim); direction: rtl; display: block; margin-bottom: 4px; }
+.bc-pat { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--ink-dim); letter-spacing: 0.12em; margin-bottom: 4px; }
+.bc-bar { height: 3px; background: rgba(255,255,255,0.07); border-radius: 2px; overflow: hidden; }
+.bc-fill { height: 100%; background: linear-gradient(90deg, var(--crimson), var(--gold)); transition: width 0.8s ease; }
+.bc-pct { font-size: 0.6rem; color: var(--gold-dim); margin-top: 3px; font-family: 'JetBrains Mono', monospace; }
+.rq-row { display: flex; gap: 6px; }
+.rq-box { flex: 1; background: rgba(0,0,0,0.15); border: 1px solid var(--border2); border-radius: 8px; padding: 8px; }
+.rq-lbl { font-size: 0.56rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-dim); opacity: 0.5; display: block; margin-bottom: 4px; font-family: 'JetBrains Mono', monospace; }
+.rq-val { font-family: 'Noto Nastaliq Urdu', serif; font-size: 1rem; color: var(--gold); direction: rtl; }
+.rq-none { font-size: 0.72rem; color: var(--ink-dim); opacity: 0.3; }
+.legend-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.legend-item { display: flex; align-items: center; gap: 4px; font-size: 0.65rem; color: var(--ink-dim); }
+.leg-sw { width: 20px; height: 16px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 0.56rem; font-weight: 700; }
+.leg-sw.L { background: rgba(212,168,67,0.15); color: var(--gold); border-bottom: 2px solid var(--gold); }
+.leg-sw.S { background: rgba(224,112,96,0.1); color: #e07060; border-bottom: 2px dashed rgba(224,112,96,0.5); }
+
+/* ══════════════════════════════════════
+   TOAST NOTIFICATION
 ══════════════════════════════════════ */
 .toast {
-  position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+  position: fixed; bottom: calc(var(--bottom-h) + 16px); left: 50%;
+  transform: translateX(-50%) translateY(20px);
   background: var(--bg3); border: 1px solid var(--border);
-  color: var(--ink); padding: 9px 18px; border-radius: 20px;
-  font-size: 0.78rem; font-weight: 500;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-  opacity: 0; transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
-  pointer-events: none; z-index: 9999; white-space: nowrap;
+  border-radius: 20px; padding: 8px 18px;
+  font-size: 0.78rem; color: var(--ink); z-index: 999;
+  opacity: 0; transition: all 0.3s; pointer-events: none;
+  white-space: nowrap;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ══════════════════════════════════════
+   DESKTOP + RESPONSIVE
+══════════════════════════════════════ */
+@media (min-width: 600px) {
+  .welcome-chips { grid-template-columns: repeat(2, 1fr); }
+  .dict-grid { grid-template-columns: repeat(3, 1fr); }
+  .browse-cards { grid-template-columns: repeat(2, 1fr); }
+  .messages { padding: 24px 24px 10px; }
+  .input-bar { padding: 10px 24px 16px; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+  .top-nav { padding: 0 24px; }
+  .diwan-scrollable, .browse-content, .dict-content, .translit-content { padding-left: 24px; padding-right: 24px; }
+  .section-header { padding: 20px 24px 12px; }
+}
+@media (min-width: 900px) {
+  body { max-width: 480px; margin: 0 auto; border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
+}
 
 /* ══════════════════════════════════════
    GHAZAL MODAL
 ══════════════════════════════════════ */
 .ghazal-modal-overlay {
   position: fixed; inset: 0; z-index: 1000;
-  background: rgba(8,6,3,0.88); backdrop-filter: blur(8px);
+  background: rgba(8,6,3,0.88);
+  backdrop-filter: blur(8px);
   display: flex; align-items: flex-end; justify-content: center;
-  padding: 0; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  padding: 0; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
 }
 .ghazal-modal-overlay.open { opacity: 1; pointer-events: all; }
 .ghazal-modal {
   background: linear-gradient(160deg, var(--bg2) 0%, #0e0b06 100%);
-  border: 1px solid rgba(212,168,67,0.18); border-bottom: none;
+  border: 1px solid rgba(212,168,67,0.18);
+  border-bottom: none;
   border-radius: 24px 24px 0 0;
-  width: 100%; max-width: 520px; max-height: 88vh;
-  display: flex; flex-direction: column;
+  width: 100%; max-width: 520px;
+  max-height: 88vh; display: flex; flex-direction: column;
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
 }
 .ghazal-modal-overlay.open .ghazal-modal { transform: translateY(0); }
 .ghazal-modal-handle {
   width: 36px; height: 4px; border-radius: 2px;
-  background: rgba(212,168,67,0.25); margin: 14px auto 0; flex-shrink: 0;
+  background: rgba(212,168,67,0.25);
+  margin: 14px auto 0; flex-shrink: 0;
 }
 .ghazal-modal-header {
-  padding: 14px 20px 12px; border-bottom: 1px solid rgba(212,168,67,0.1); flex-shrink: 0;
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid rgba(212,168,67,0.1);
+  flex-shrink: 0;
 }
 .ghazal-modal-poet {
   font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--gold); font-family: 'JetBrains Mono', monospace; opacity: 0.85; margin-bottom: 2px;
+  color: var(--gold); font-family: 'JetBrains Mono', monospace; opacity: 0.85;
+  margin-bottom: 2px;
 }
 .ghazal-modal-script {
   font-size: 0.58rem; color: var(--cream-dim); opacity: 0.5;
   font-family: 'JetBrains Mono', monospace; letter-spacing: 0.08em;
 }
-.ghazal-modal-body { overflow-y: auto; padding: 18px 20px; flex: 1; -webkit-overflow-scrolling: touch; }
+.ghazal-modal-body {
+  overflow-y: auto; padding: 18px 20px;
+  flex: 1; -webkit-overflow-scrolling: touch;
+}
 .ghazal-modal-text {
   font-size: 0.95rem; color: var(--cream); line-height: 2.1; white-space: pre-line;
 }
 .ghazal-modal-text.urdu {
   font-family: 'Noto Nastaliq Urdu', serif;
-  direction: rtl; text-align: right; font-size: 1.05rem; line-height: 2.4;
+  direction: rtl; text-align: right;
+  font-size: 1.05rem; line-height: 2.4;
 }
 .ghazal-modal-text.roman { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1rem; }
 .ghazal-modal-footer {
-  padding: 14px 20px 28px; border-top: 1px solid rgba(212,168,67,0.08);
+  padding: 14px 20px 28px;
+  border-top: 1px solid rgba(212,168,67,0.08);
   display: flex; gap: 10px; flex-shrink: 0;
 }
 .ghazal-modal-btn {
@@ -800,22 +955,22 @@ body {
 .ghazal-modal-btn.primary { background: rgba(212,168,67,0.1); color: var(--gold); }
 .ghazal-modal-btn.primary:hover { background: rgba(212,168,67,0.18); }
 
+/* Browse mode toggle */
 .browse-mode-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
 .browse-mode-tab {
   flex: 1; background: none;
   border: 1px solid rgba(212,168,67,0.15); border-radius: 10px;
   padding: 8px 10px; color: var(--cream-dim);
   font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
-  letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: pointer; transition: all 0.2s;
 }
 .browse-mode-tab.active {
-  background: rgba(212,168,67,0.1); color: var(--gold); border-color: rgba(212,168,67,0.35);
+  background: rgba(212,168,67,0.1); color: var(--gold);
+  border-color: rgba(212,168,67,0.35);
 }
 .browse-count-badge { display: inline-block; font-size: 0.55rem; opacity: 0.6; margin-left: 4px; }
 
-@media (min-width: 480px) {
-  .welcome-chips { grid-template-columns: repeat(2, 1fr); }
-}
 </style>
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2391,10 +2546,12 @@ function renderDiwan() {
     const verseText = s.urdu || s.roman || '';
     const idx = _diwanItems.length;
     _diwanItems.push({ verseText, label: 'Sher ' + (i+1) + ' by Saif' });
+    const renderMisras = (text, cls) => text.split('\n').map(m => m.trim()).filter(m => m.length > 0)
+      .map(m => `<div class="${cls}">${esc(m)}</div>`).join('');
     html += `<div class="diwan-card">
       <div class="diwan-card-meta">Sher ${i+1} <span class="theme-tag">${esc(s.theme)}</span></div>
-      ${s.urdu ? `<div class="diwan-text-urdu">${esc(s.urdu)}</div>` : ''}
-      ${s.roman ? `<div class="diwan-text-roman">${esc(s.roman)}</div>` : ''}
+      ${s.urdu ? `<div class="sher-block" style="margin-bottom:0.5rem;">${renderMisras(s.urdu,'diwan-text-urdu')}</div>` : ''}
+      ${s.roman ? `<div class="sher-block" style="margin-bottom:0.5rem;">${renderMisras(s.roman,'diwan-text-roman')}</div>` : ''}
       <div class="diwan-note">${esc(s.note)}</div>
       <div class="diwan-actions">
         <button class="analyze-btn" onclick="analyzeFromDiwan(${idx})">✦ Analyze in Chat</button>
@@ -2412,7 +2569,12 @@ function renderDiwan() {
       <div class="diwan-card-meta">${esc(g.title)} <span class="theme-tag">Radif: ${esc(g.radif)}</span></div>`;
     g.shers.forEach((sh, i) => {
       const isU = isUrduScript(sh);
-      html += `<div class="${isU ? 'diwan-text-urdu' : 'diwan-text-roman'}" style="margin-bottom:0.4rem;">${esc(sh)}</div>`;
+      const misras = sh.split('\n').map(m => m.trim()).filter(m => m.length > 0);
+      html += `<div class="sher-block" style="margin-bottom:1rem;">`;
+      misras.forEach(m => {
+        html += `<div class="${isU ? 'diwan-text-urdu' : 'diwan-text-roman'}">${esc(m)}</div>`;
+      });
+      html += `</div>`;
       if (i < g.shers.length - 1) html += `<div class="sher-divider"></div>`;
     });
     html += `<div class="diwan-note">${esc(g.note)}</div>
@@ -2583,7 +2745,7 @@ function renderBrowse() {
           <span class="browse-script-tag ${item.script==='urdu'?'script-urdu':'script-roman'}">${item.script==='urdu'?'اردو':'Roman'}</span>
         </div>
         <div class="browse-poem-text ${item.script==='urdu'?'urdu':'roman'}">${esc(item.misra1)}</div>
-        <div class="browse-poem-text ${item.script==='urdu'?'urdu':'roman'} browse-misra2">${esc(item.misra2)}</div>
+        <div class="browse-poem-text ${item.script==='urdu'?'urdu':'roman'} browse-misra2" style="margin-bottom:0.75rem;">${esc(item.misra2)}</div>
         <button class="browse-use-btn" onclick="sendFromBrowse(${i})">✦ Analyze in Chat</button>
       </div>`).join('');
     window._browsePool = shown;
