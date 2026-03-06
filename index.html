@@ -1186,14 +1186,13 @@ body {
 
 <script>
 // ═══════════════════════════════════════════════════════════════════
-// ╔══════════════════════════════════════════════════════════════════╗
-// ║              ✦  GROQ API CONFIGURATION  ✦                       ║
-// ══════════════════════════════════════════════════════════════════
-// Powered by WebLLM — 100% FREE, runs in your browser, no API needed!
-// Model downloads once (~2GB), then cached forever. No server. No cost.
-// ══════════════════════════════════════════════════════════════════
-const WEBLLM_MODEL = "Llama-3.2-3B-Instruct-q4f16_1-MLC"; // fast + good Urdu
-let webllmEngine = null; // initialized on first message
+// ✦  GITHUB MODELS — Free API powered by Llama-3.3-70B-Instruct
+// 128K context window · No download · No GPU required · Streams fast
+// Get token: github.com/settings/tokens → New token → check "models:read"
+// ═══════════════════════════════════════════════════════════════════
+const GH_MODEL = "meta/Llama-3.3-70B-Instruct";
+const GH_ENDPOINT = "https://models.github.ai/inference/chat/completions";
+let _ghToken = localStorage.getItem("gh_token") || "";
 // ═══════════════════════════════════════════════════════════════════
 // SAIF'S POETRY — hardcoded at base level, used for RAG + Diwan tab
 // Source: saifpoetry.csv + safih.jsx verified shers
@@ -1706,36 +1705,91 @@ function getDatasetPoets() {
 }
 
 
-const SYSTEM_PROMPT = `You are SAFIIH BADPOET — an Urdu poetry companion built by Saifullah Riaz (takhallus: Saif / سیف, Instagram: @mesaifhu). You are NOT an AI or Mistral — you are Safiih Badpoet. If asked: "Main ek shayar ka khwaab hoon — Saif ka khwaab."
+const SYSTEM_PROMPT = `You are SAFIIH BADPOET — an Urdu poetry companion built by Saifullah Riaz (takhallus: Saif / سیف, Instagram: @mesaifhu). You are NOT an AI or Mistral. If asked who you are: "Main ek shayar ka khwaab hoon — Saif ka khwaab."
 
-SCRIPT LAW: Match the user's script. Roman/English in → respond in English + Roman Urdu only. Nastaliq in → respond in Nastaliq + English only. NEVER output Devanagari — transliterate to Roman Urdu instead.
+SCRIPT LAW: Match the user's script always. Roman/English in → respond in English + Roman Urdu only. Nastaliq in → respond in Nastaliq + English only. NEVER output Devanagari.
 
-PERSONALITY: Warm but never soft. Precise but never cold. Poetic always. You correct mistakes directly ("Yeh galat hai."), celebrate brilliance fully ("Wah. Yeh misra kisi ustad ka bhi hota."), never validate mediocrity. End naturally — no filler.
+PERSONALITY: Warm but never soft. Precise but never cold. Poetic always. Correct mistakes directly. Celebrate brilliance fully. Never validate mediocrity. No filler.
 
-PROSODY: Expert in classical Urdu prosody.
-- Radeef: identical word(s) at end of every rhyming line
-- Qafiya: rhyming word just before radeef
-- Taqti: scansion — Long (2), Short (1)
-- Beher: Hazaj (mafaaelun×4), Ramal (faaelaaatun×4), Mutaqarib (faoolun×4)
-- Forms: Ghazal (matla + consistent radif/qafiya), Qita, Nazm, Rubai
-- When analyzing: ALWAYS identify form, radif, qafiya, beher.
+━━━ RADEEF & QAFIYA — IRON LAWS ━━━
 
-GENERATION: Meaning over rhyme always. Every sher = one unified thought. For ghazals: choose precise emotion → choose radif → list qafiyas → write.
+RADEEF (ردیف) — THE REFRAIN:
+- Radeef = the IDENTICAL word(s) that appear at the end of BOTH lines of the matla, and at the end of the SECOND line (misra-e-sani) of every subsequent sher. IDENTICAL. Not similar. Not paraphrased. The EXACT same word(s).
+- To identify radeef: look at the last word(s) of every second misra. The longest sequence that is IDENTICAL across ALL of them = the radeef.
+- Radeef can be 1 word, a phrase, or even a full clause. It never changes.
+- If even ONE sher's second misra ends differently → that is a radeef violation. Name it explicitly.
+- In the matla (first sher), BOTH misras must end with qafiya + radeef. This is what makes it the matla.
+- A ghazal with no radeef is valid — that is called "ghair-muraddaf" — but then the qafiya alone carries the rhyme and must be CONSISTENT.
 
-AUTHENTICITY: NEVER fabricate classical shers. Only quote what you are certain exists. If uncertain, discuss the poet's style in prose. Never guess radeef/qafiya of an unknown ghazal.
+QAFIYA (قافیہ) — THE RHYME:
+- Qafiya = the rhyming word that appears IMMEDIATELY before the radeef in every rhyming misra.
+- All qafiyas in a ghazal must share the same "rawi" — the core rhyming sound/phoneme. They RHYME — they do NOT repeat.
+- Repeating the same word as qafiya in two different shers = "ita" — a serious flaw. Call it out.
+- Inconsistent vowel before the rawi = "sinad" — a flaw. Call it out.
+- Near-rhyme (close but not matching rawi) = "ikfa" — a flaw. Call it out.
+- PROCESS: When analyzing, first strip the radeef from each line ending, then the remaining last word = qafiya. Check that all qafiyas share the same rawi.
 
-SAIF'S POETRY: Reproduce Saif's shers EXACTLY when shared. Never add lines. His words are sacred.
+WHEN ANALYZING A GHAZAL — MANDATORY STEPS:
+1. Extract every second misra (misra-e-sani). List them.
+2. Find the longest common suffix across ALL of them = radeef. State it clearly.
+3. Strip radeef. The word immediately before = qafiya for that sher. List all qafiyas.
+4. Check all qafiyas share the same rawi. If not — name the violation and which sher breaks it.
+5. Check matla: do BOTH lines end with qafiya+radeef? State yes or no.
+6. Identify beher. Identify form (ghazal/qita/nazm/rubai).
+7. NEVER skip any of these 6 steps. NEVER approximate. NEVER guess.
+
+━━━ DATASET & AUTHENTICITY — ZERO TOLERANCE ━━━
+
+YOU HAVE ACCESS TO THESE VERIFIED DATASETS (embedded in this app):
+- Fizza Rubab: 17,609 authenticated couplets, 15 poets (IEEE published) — your PRIMARY source
+- Saadat Mateen: Complete Kulliyat-e-Ghalib (CC0) — use for ALL Ghalib quotes
+- Amir Raza: 1,300 Rekhta ghazals, 29 poets — use for radeef/qafiya examples
+- CoreX Technologies: Roman Urdu poetry corpus
+- pathikg: 3,900+ Roman Urdu ghazals, 30 poets
+- keplersystems: 35,000+ couplets
+- Ghazal_ur.csv: 13,000+ Urdu script shers
+
+DATASET-FIRST — NON-NEGOTIABLE:
+- Every classical sher you quote MUST come from these datasets or your certain verified knowledge.
+- Before quoting ANY sher: ask yourself — am I 100% certain this exact sher exists and is by this poet? If the answer is anything less than 100% → DO NOT QUOTE IT.
+- If you cannot find a verified example → say exactly: "Mujhe is waqt koi verified sher nahi mil raha — main poet ki style mein samjhata hoon." Then explain in prose.
+- NEVER say "a sher by Ghalib goes something like..." — this is fabrication. Either you know it exactly or you don't quote it.
+- NEVER paraphrase a sher and present it as original. NEVER reconstruct from memory.
+- ONE wrong attribution destroys trust permanently. The user may recite your quote in public. You owe them accuracy.
+
+RADEEF/QAFIYA OF CLASSICAL GHAZALS — SPECIAL STRICTNESS:
+- If asked about the radeef/qafiya of a specific classical ghazal: only answer if you are CERTAIN of that ghazal's complete text. If uncertain → say so, do NOT guess.
+- Do not identify radeef by looking at only 1-2 shers. You need the full ghazal or at minimum 4+ shers to be sure.
+- "I think the radeef might be..." is NOT acceptable. Either you know or you say you don't.
+
+WHEN GENERATING POETRY:
+- Use radeef patterns proven in the datasets: "hai", "nahin", "mera", "tha", "gaya", "ke baad", "hoon", "raha hoon"
+- Use qafiya families from verified ghazals: -aan, -aar, -eel, -iim, -ood, -aab, -ush
+- Plan all qafiyas BEFORE writing any sher. List them. Check they share the same rawi. Then write.
+- After writing each sher: verify the qafiya fits the rawi. Verify the radeef is IDENTICAL. Only then move to next sher.
+- Do NOT invent exotic radeef/qafiya combinations without classical precedent.
+
+━━━ PROSODY ━━━
+- Taqti: Long (2), Short (1). Show pattern as sequence of 2s and 1s.
+- Beher: Hazaj (mafaaelun×4), Ramal (faaelaaatun×4), Mutaqarib (faoolun×4), Kamil (mutafaaelun×4)
+- Roman correction: long vowels = aa/ii/ee/uu/oo/ai/au; digraphs = kh/gh/sh/ch/zh
+
+━━━ SAIF & CREATOR ━━━
+POET STYLES: Ghalib = philosophical iham; Dagh = effortless romantic (Saif's favourite); Faiz = lyrical resistance; Mir = deceptive simplicity; Jaun = raw nihilism; Parveen = feminine interiority; Faraz = clean heartbreak.
+SAIF'S POETRY: Reproduce EXACTLY. Never add lines. Sacred.
+CREATOR: Saifullah Riaz (@mesaifhu). Takhallus = Saif / سیف. Favourite = Dagh Dehlvi. "Safiih" = app name only.
 
 SPECIAL TRIGGERS:
-- "who created you" → Credits to Saifullah Riaz (@mesaifhu), built with Ghalib/Faiz/Dagh datasets
+- "who created you" → Credits: Saifullah Riaz (@mesaifhu), Claude AI canvas, Ghalib/Fizza/Dagh datasets
 - "saif pagal hai" → "haan tumhare pyaar mein 🌹"
-- "saifu" in message → warn politely: his name is Saif, not Saifu
-- "teach me ghazal" → interactive lesson, ask for their radif first
-- "dagh" / "dagh dehlvi" → speak with reverence, share a verified Dagh sher
+- "saif ka phone number milega" → "Apki ammi ka number milega kya 😄"
+- "saifu" anywhere → warn: Saif not Saifu, adab chahiye 🌹
+- "teach me ghazal" → interactive lesson, start with: what emotion? then radif? then list qafiyas together before writing a single misra
+- "dagh" / "dagh dehlvi" → reverence, verified Dagh sher, explain his style
+- "1857" → haunting story of Urdu poetry after the Mughal fall
+- "ishq ishq ishq" → philosophical rant on ishq as the universe's beher
 
-After generated poems: give translation, word notes, overall meaning, key symbols. Beautiful and focused.
-
-` + buildSaifContext();// ═══════════════════════════════════════════════════════════════════
+After generated poems: translation + word notes + overall meaning + key symbols. Tight and beautiful.` + buildSaifContext();//
 // API + CHAT
 // ═══════════════════════════════════════════════════════════════════
 const chatHistory = [];
@@ -1831,76 +1885,130 @@ function stripDevanagari(text) {
 }
 
 // Adaptive token limit based on what the user is asking
-function getMaxTokens(text) {
-  return 4000;
+// ── GitHub Models API ───────────────────────────────────────────────────────
+function getGhToken() {
+  if (_ghToken) return _ghToken;
+  _ghToken = localStorage.getItem("gh_token") || "";
+  return _ghToken;
 }
 
-// ── WebLLM engine initializer ────────────────────────────────────────────────
-async function initWebLLM(onProgress) {
-  if (webllmEngine) return webllmEngine;
-  const { CreateMLCEngine } = await import("https://esm.run/@mlc-ai/web-llm");
-  webllmEngine = await CreateMLCEngine(WEBLLM_MODEL, {
-    initProgressCallback: (p) => {
-      const pct = Math.round((p.progress || 0) * 100);
-      const loaded = p.text || '';
-      if (onProgress) onProgress(pct, loaded);
-    }
-  });
-  return webllmEngine;
+function saveGhToken(tok) {
+  _ghToken = tok.trim();
+  localStorage.setItem("gh_token", _ghToken);
+}
+
+function showTokenModal() {
+  document.getElementById("gh-token-modal").style.display = "flex";
+  document.getElementById("gh-token-input").focus();
+}
+
+function closeTokenModal() {
+  document.getElementById("gh-token-modal").style.display = "none";
+}
+
+function submitToken() {
+  const val = document.getElementById("gh-token-input").value.trim();
+  if (!val) { showToast("Please enter your GitHub token"); return; }
+  saveGhToken(val);
+  closeTokenModal();
+  showToast("Token saved ✦ Now type your message and send!");
 }
 
 async function callAPI(userMessage) {
-  chatHistory.push({ role: 'user', content: userMessage });
-  const trimmed = chatHistory.length <= 4 ? chatHistory : chatHistory.slice(-4);
-  const messages = [{ role: 'system', content: SYSTEM_PROMPT }, ...trimmed];
+  const token = getGhToken();
+  if (!token) { showTokenModal(); return ""; }
 
-  // Show model download progress if first time
-  const typingEl = document.getElementById('typing-indicator');
-  const bubbleEl = typingEl?.querySelector('.msg-bubble');
+  chatHistory.push({ role: "user", content: userMessage });
+  const trimmed = chatHistory.length <= 8 ? chatHistory : chatHistory.slice(-8);
+  const messages = [{ role: "system", content: SYSTEM_PROMPT }, ...trimmed];
 
-  const engine = await initWebLLM((pct, text) => {
-    if (bubbleEl) {
-      bubbleEl.innerHTML = `<div class="sabr-loader">
-        <div class="sabr-petals"><div class="sabr-petal"></div><div class="sabr-petal"></div><div class="sabr-petal"></div><div class="sabr-petal"></div></div>
-        <div class="sabr-text">ماڈل لوڈ ہو رہا ہے…</div>
-        <div class="sabr-sub">Downloading AI model: ${pct}% — only once, then cached forever ✦</div>
-        <div style="margin-top:8px;background:var(--bg3);border-radius:20px;height:4px;width:100%;overflow:hidden;">
-          <div style="background:linear-gradient(90deg,var(--gold),var(--gem-purple));height:100%;width:${pct}%;transition:width 0.3s;border-radius:20px;"></div>
-        </div>
-      </div>`;
-    }
-  });
-
-  // Stream the reply
-  let raw = '';
-  const stream = await engine.chat.completions.create({ messages, stream: true, temperature: 0.8 });
-
-  // Show streamed output live in bubble
   removeTyping();
   hideWelcome();
-  const msgs = document.getElementById('messages');
-  const streamDiv = document.createElement('div');
-  streamDiv.className = 'msg bot';
-  streamDiv.innerHTML = '<div class="msg-avatar">س</div><div class="msg-body"><div class="msg-bubble" id="stream-bubble"></div></div>';
+  const msgs = document.getElementById("messages");
+  const streamDiv = document.createElement("div");
+  streamDiv.className = "msg bot";
+  streamDiv.innerHTML = "<div class=\"msg-avatar\">س</div><div class=\"msg-body\"><div class=\"msg-bubble\" id=\"stream-bubble\"></div></div>";
   msgs.appendChild(streamDiv);
-  const streamBubble = document.getElementById('stream-bubble');
+  const streamBubble = document.getElementById("stream-bubble");
 
-  for await (const chunk of stream) {
-    const delta = chunk.choices?.[0]?.delta?.content || '';
-    raw += delta;
-    streamBubble.innerHTML = formatBotText(raw) + '<span class="stream-cursor">▋</span>';
-    smartScroll();
+  let raw = "";
+  try {
+    const resp = await fetch(GH_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + token,
+        "Content-Type": "application/json",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28"
+      },
+      body: JSON.stringify({
+        model: GH_MODEL,
+        messages,
+        stream: true,
+        temperature: 0.8,
+        max_tokens: 1024
+      })
+    });
+
+    if (!resp.ok) {
+      const err = await resp.text();
+      if (resp.status === 401 || resp.status === 403) {
+        _ghToken = "";
+        localStorage.removeItem("gh_token");
+        streamBubble.innerHTML = formatBotText("⚠️ Token invalid or expired. Please enter a new GitHub token.");
+        showTokenModal();
+      } else if (resp.status === 429) {
+        streamBubble.innerHTML = formatBotText("⚠️ Rate limit reached. GitHub Models allows ~15 requests/min. Please wait a moment and try again.");
+      } else {
+        streamBubble.innerHTML = formatBotText("⚠️ Error " + resp.status + ": " + err.slice(0, 200));
+      }
+      const timeEl2 = document.createElement("div");
+      timeEl2.className = "msg-time"; timeEl2.textContent = getTime();
+      streamDiv.querySelector(".msg-body").appendChild(timeEl2);
+      chatHistory.pop();
+      return "";
+    }
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      const lines = buf.split("\n");
+      buf = lines.pop();
+      for (const line of lines) {
+        const trimLine = line.trim();
+        if (!trimLine || trimLine === "data: [DONE]") continue;
+        if (!trimLine.startsWith("data:")) continue;
+        try {
+          const json = JSON.parse(trimLine.slice(5).trim());
+          const delta = json.choices?.[0]?.delta?.content || "";
+          raw += delta;
+          streamBubble.innerHTML = formatBotText(raw) + "<span class=\"stream-cursor\">▋</span>";
+          smartScroll();
+        } catch(e) {}
+      }
+    }
+
+    streamBubble.innerHTML = formatBotText(raw);
+  } catch(err) {
+    streamBubble.innerHTML = formatBotText("⚠️ Network error: " + err.message + "\n\nMake sure you are connected to the internet.");
+    chatHistory.pop();
+    const timeEl3 = document.createElement("div");
+    timeEl3.className = "msg-time"; timeEl3.textContent = getTime();
+    streamDiv.querySelector(".msg-body").appendChild(timeEl3);
+    return "";
   }
-  streamBubble.innerHTML = formatBotText(raw);
 
-  // Add time
-  const timeEl = document.createElement('div');
-  timeEl.className = 'msg-time';
-  timeEl.textContent = getTime();
-  streamDiv.querySelector('.msg-body').appendChild(timeEl);
+  const timeEl = document.createElement("div");
+  timeEl.className = "msg-time"; timeEl.textContent = getTime();
+  streamDiv.querySelector(".msg-body").appendChild(timeEl);
 
   const reply = stripDevanagari(raw);
-  chatHistory.push({ role: 'assistant', content: reply });
+  chatHistory.push({ role: "assistant", content: reply });
   return reply;
 }
 // Render bot reply word-by-word for a real-time streaming feel
@@ -1959,7 +2067,7 @@ async function sendMessage() {
 
   try {
     const reply = await callAPI(text);
-    // WebLLM streams directly into DOM — just save and handle taqti
+    if (!reply) { isLoading = false; document.getElementById('send-btn').disabled = false; return; }
     const correctedLines = taqtiAsked ? extractCorrectedLines(reply) : null;
     const taqtiLines = correctedLines || userLines;
     if (taqtiLines && taqtiLines.length) renderTaqtiPanel(taqtiLines);
@@ -2179,94 +2287,87 @@ function renderDict(entries){
 const _diwanItems = []; // lookup table: index → {verseText, label}
 
 function renderDiwan() {
-  _diwanItems.length = 0; // reset
+  _diwanItems.length = 0;
   const panel = document.getElementById('diwan-panel');
-  let html = `<div class="diwan-hero">
-    <div class="diwan-name-big">دیوانِ سیف</div>
-    <div class="diwan-poet-info">Saifullah Riaz · تخلص: سیف · @mesaifhu</div>
-  </div>`;
+
+  function misraBlocks(text, cls) {
+    return text.split('\n').map(function(m){ return m.trim(); }).filter(function(m){ return m.length > 0; })
+      .map(function(m){ return '<div class="' + cls + '">' + esc(m) + '</div>'; }).join('');
+  }
+
+  var html = '<div class="diwan-hero">'
+    + '<div class="diwan-name-big">دیوانِ سیف</div>'
+    + '<div class="diwan-poet-info">Saifullah Riaz · تخلص: سیف · @mesaifhu</div>'
+    + '</div>';
 
   // Shers
-  html += `<div class="diwan-section-label">Shers — اشعار</div>`;
-  SAIF_POETRY.shers.forEach((s,i) => {
-    const verseText = s.urdu || s.roman || '';
-    const idx = _diwanItems.length;
-    _diwanItems.push({ verseText, label: 'Sher ' + (i+1) + ' by Saif' });
-    const renderMisras = (text, cls) => text.split('\n').map(m => m.trim()).filter(m => m.length > 0)
-      .map(m => `<div class="${cls}">${esc(m)}</div>`).join('');
-    html += `<div class="diwan-card">
-      <div class="diwan-card-meta">Sher ${i+1} <span class="theme-tag">${esc(s.theme)}</span></div>
-      ${s.urdu ? `<div class="sher-block" style="margin-bottom:0.5rem;">${renderMisras(s.urdu,'diwan-text-urdu')}</div>` : ''}
-      ${s.roman ? `<div class="sher-block" style="margin-bottom:0.5rem;">${renderMisras(s.roman,'diwan-text-roman')}</div>` : ''}
-      <div class="diwan-note">${esc(s.note)}</div>
-      <div class="diwan-actions">
-        <button class="analyze-btn" onclick="analyzeFromDiwan(${idx})">✦ Analyze in Chat</button>
-      </div>
-    </div>`;
+  html += '<div class="diwan-section-label">Shers — اشعار</div>';
+  SAIF_POETRY.shers.forEach(function(s, i) {
+    var verseText = s.urdu || s.roman || '';
+    var idx = _diwanItems.length;
+    _diwanItems.push({ verseText: verseText, label: 'Sher ' + (i+1) + ' by Saif' });
+    html += '<div class="diwan-card">'
+      + '<div class="diwan-card-meta">Sher ' + (i+1) + ' <span class="theme-tag">' + esc(s.theme) + '</span></div>'
+      + (s.urdu ? '<div class="sher-block" style="margin-bottom:0.5rem;">' + misraBlocks(s.urdu, 'diwan-text-urdu') + '</div>' : '')
+      + (s.roman ? '<div class="sher-block" style="margin-bottom:0.5rem;">' + misraBlocks(s.roman, 'diwan-text-roman') + '</div>' : '')
+      + '<div class="diwan-note">' + esc(s.note) + '</div>'
+      + '<div class="diwan-actions"><button class="analyze-btn" onclick="analyzeFromDiwan(' + idx + ')">✦ Analyze in Chat</button></div>'
+      + '</div>';
   });
 
   // Ghazals
-  html += `<div class="diwan-section-label">Ghazaliyat — غزلیات</div>`;
-  SAIF_POETRY.ghazals.forEach(g => {
-    const fullText = g.shers.join('\n\n');
-    const idx = _diwanItems.length;
+  html += '<div class="diwan-section-label">Ghazaliyat — غزلیات</div>';
+  SAIF_POETRY.ghazals.forEach(function(g) {
+    var fullText = g.shers.join('\n\n');
+    var idx = _diwanItems.length;
     _diwanItems.push({ verseText: fullText, label: g.title + ' — Ghazal by Saif' });
-    html += `<div class="diwan-card">
-      <div class="diwan-card-meta">${esc(g.title)} <span class="theme-tag">Radif: ${esc(g.radif)}</span></div>`;
-    g.shers.forEach((sh, i) => {
-      const isU = isUrduScript(sh);
-      const misras = sh.split('\n').map(m => m.trim()).filter(m => m.length > 0);
-      html += `<div class="sher-block" style="margin-bottom:1rem;">`;
-      misras.forEach(m => {
-        html += `<div class="${isU ? 'diwan-text-urdu' : 'diwan-text-roman'}">${esc(m)}</div>`;
-      });
-      html += `</div>`;
-      if (i < g.shers.length - 1) html += `<div class="sher-divider"></div>`;
+    html += '<div class="diwan-card">'
+      + '<div class="diwan-card-meta">' + esc(g.title) + ' <span class="theme-tag">Radif: ' + esc(g.radif) + '</span></div>';
+    g.shers.forEach(function(sh, i) {
+      var isU = isUrduScript(sh);
+      var cls = isU ? 'diwan-text-urdu' : 'diwan-text-roman';
+      html += '<div class="sher-block" style="margin-bottom:1rem;">'
+        + misraBlocks(sh, cls)
+        + '</div>';
+      if (i < g.shers.length - 1) html += '<div class="sher-divider"></div>';
     });
-    html += `<div class="diwan-note">${esc(g.note)}</div>
-      <div class="diwan-actions">
-        <button class="analyze-btn" onclick="analyzeFromDiwan(${idx})">✦ Analyze in Chat</button>
-      </div>
-    </div>`;
+    html += '<div class="diwan-note">' + esc(g.note) + '</div>'
+      + '<div class="diwan-actions"><button class="analyze-btn" onclick="analyzeFromDiwan(' + idx + ')">✦ Analyze in Chat</button></div>'
+      + '</div>';
   });
 
   // Nazms
   if (SAIF_POETRY.nazms && SAIF_POETRY.nazms.length) {
-    html += `<div class="diwan-section-label">Nazms — نظمیں</div>`;
-    SAIF_POETRY.nazms.forEach(n => {
-      const idx = _diwanItems.length;
+    html += '<div class="diwan-section-label">Nazms — نظمیں</div>';
+    SAIF_POETRY.nazms.forEach(function(n) {
+      var idx = _diwanItems.length;
       _diwanItems.push({ verseText: n.text, label: n.title + ' — Nazm by Saif' });
-      html += `<div class="diwan-card">
-        <div class="diwan-card-meta">${esc(n.title)}</div>
-        <div class="diwan-text-urdu">${esc(n.text)}</div>
-        <div class="diwan-note">${esc(n.note)}</div>
-        <div class="diwan-actions">
-          <button class="analyze-btn" onclick="analyzeFromDiwan(${idx})">✦ Analyze in Chat</button>
-        </div>
-      </div>`;
+      html += '<div class="diwan-card">'
+        + '<div class="diwan-card-meta">' + esc(n.title) + '</div>'
+        + '<div class="diwan-text-urdu">' + esc(n.text) + '</div>'
+        + '<div class="diwan-note">' + esc(n.note) + '</div>'
+        + '<div class="diwan-actions"><button class="analyze-btn" onclick="analyzeFromDiwan(' + idx + ')">✦ Analyze in Chat</button></div>'
+        + '</div>';
     });
   }
 
   // Credits
-  html += `<div class="diwan-card" style="text-align:center;margin-top:8px;">
-    <div style="font-family:'Noto Nastaliq Urdu',serif;font-size:0.95rem;color:var(--gold);direction:rtl;line-height:2;margin-bottom:10px;">جس چراغ کو یہ لوگ روشن کر کے گئے<br>اسی کی روشنی میں میں آج بولتا ہوں</div>
-    <div style="font-size:0.7rem;color:var(--ink-dim);font-style:italic;margin-bottom:14px;line-height:1.6;">(The lamp these people lit before they left —<br>it is by that very light that I now speak.)</div>
-    <div style="font-size:0.68rem;color:var(--gold-dim);letter-spacing:0.1em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:10px;">Built on the shoulders of</div>
-    <div style="display:flex;flex-direction:column;gap:6px;text-align:left;">
-      <div style="font-size:0.72rem;color:var(--ink-dim);line-height:1.5;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:2px solid var(--gold-dim);">🔹 <strong style="color:var(--cream)">CoreX Technologies</strong> — Roman-Urdu_PoetryGenerator (PyTorch LSTM)</div>
-      <div style="font-size:0.72rem;color:var(--ink-dim);line-height:1.5;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:2px solid var(--gold-dim);">🔹 <strong style="color:var(--cream)">Saadat Mateen</strong> — Kulliyāt-e-Ghalib (CC0, saadatm/ghalib)</div>
-      <div style="font-size:0.72rem;color:var(--ink-dim);line-height:1.5;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:2px solid var(--gold-dim);">🔹 <strong style="color:var(--cream)">Ikram Ali</strong> — urduhack NLP library</div>
-      <div style="font-size:0.72rem;color:var(--ink-dim);line-height:1.5;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:2px solid var(--gold-dim);">🔹 <strong style="color:var(--cream)">Amir Raza</strong> — 1,300 Rekhta ghazals, 29 poets (amir9ume)</div>
-      <div style="font-size:0.72rem;color:var(--ink-dim);line-height:1.5;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:2px solid var(--gold-dim);">🔹 <strong style="color:var(--cream)">Aleezeh Usman</strong> — Urdu-Poetry-Generation n-gram models</div>
-      <div style="font-size:0.72rem;color:var(--ink-dim);line-height:1.5;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:2px solid var(--gold-dim);">🔹 <strong style="color:var(--cream)">Fizza Rubab</strong> — 17,609 couplets, 15 poets (IEEE published)</div>
-      <div style="font-size:0.72rem;color:var(--ink-dim);line-height:1.5;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:2px solid var(--gold-dim);">🔹 <strong style="color:var(--cream)">pathikg</strong> — gazal-dataset · <strong style="color:var(--cream)">keplersystems</strong> — 35,000+ couplets · <strong style="color:var(--cream)">ReySajju742</strong> — Urdu Poetry Dataset · <strong style="color:var(--cream)">Ehtisham1328</strong> — Urdu Idioms · <strong style="color:var(--cream)">Ghazal_ur.csv</strong> — 13,000+ Urdu shers</div>
-    </div>
-    <div style="font-size:0.68rem;color:var(--ink-dim);letter-spacing:0.06em;margin-top:14px;">Built with love by Saif · Powered by Powered by Groq · @mesaifhu</div>
-  </div>`;
+  html += '<div class="diwan-card" style="text-align:center;margin-top:8px;">'
+    + '<div style="font-family:\'Noto Nastaliq Urdu\',serif;font-size:0.95rem;color:var(--gold);direction:rtl;line-height:2;margin-bottom:10px;">جس چراغ کو یہ لوگ روشن کر کے گئے<br>اسی کی روشنی میں میں آج بولتا ہوں</div>'
+    + '<div style="font-size:0.7rem;color:var(--ink-dim);font-style:italic;margin-bottom:14px;line-height:1.6;">(The lamp these people lit before they left —<br>it is by that very light that I now speak.)</div>'
+    + '<div style="font-size:0.68rem;color:var(--gold-dim);letter-spacing:0.1em;text-transform:uppercase;font-family:\'JetBrains Mono\',monospace;margin-bottom:10px;">Built on the shoulders of</div>'
+    + '<div style="display:flex;flex-direction:column;gap:6px;text-align:left;">'
+    + '<div style="font-size:0.72rem;color:var(--ink-dim);line-height:1.5;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:2px solid var(--gold-dim);">🔹 <strong style="color:var(--cream)">CoreX Technologies</strong> — Roman-Urdu_PoetryGenerator (PyTorch LSTM)</div>'
+    + '<div style="font-size:0.72rem;color:var(--ink-dim);line-height:1.5;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:2px solid var(--gold-dim);">🔹 <strong style="color:var(--cream)">Saadat Mateen</strong> — Kulliyāt-e-Ghalib (CC0, saadatm/ghalib)</div>'
+    + '<div style="font-size:0.72rem;color:var(--ink-dim);line-height:1.5;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:2px solid var(--gold-dim);">🔹 <strong style="color:var(--cream)">Ikram Ali</strong> — urduhack NLP library</div>'
+    + '<div style="font-size:0.72rem;color:var(--ink-dim);line-height:1.5;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:2px solid var(--gold-dim);">🔹 <strong style="color:var(--cream)">Amir Raza</strong> — 1,300 Rekhta ghazals, 29 poets</div>'
+    + '<div style="font-size:0.72rem;color:var(--ink-dim);line-height:1.5;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:2px solid var(--gold-dim);">🔹 <strong style="color:var(--cream)">Fizza Rubab</strong> — 17,609 couplets, 15 poets (IEEE published)</div>'
+    + '</div>'
+    + '<div style="font-size:0.68rem;color:var(--ink-dim);letter-spacing:0.06em;margin-top:14px;">Built with love by Saif · Powered by GitHub Models · @mesaifhu</div>'
+    + '</div>';
 
   panel.innerHTML = html;
 }
-
 function analyzeFromDiwan(idx) {
   const item = _diwanItems[idx];
   if (!item) return;
@@ -2690,5 +2791,29 @@ window.addEventListener('load', async () => {
       </div>
     </div>
   </div>
+
+<!-- GitHub Token Modal -->
+<div id="gh-token-modal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#1a1a1a;border:1px solid rgba(212,168,67,0.3);border-radius:20px;padding:28px 24px;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.6);">
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:1.8rem;margin-bottom:8px;">🔑</div>
+      <div style="font-size:1rem;font-weight:600;color:#f0e6d0;margin-bottom:6px;">GitHub Token Required</div>
+      <div style="font-size:0.75rem;color:#a0a0a0;line-height:1.6;">Safiih uses <strong style="color:#d4a843;">Llama-3.3-70B</strong> via GitHub Models — free, fast, and Urdu-capable. No download needed.</div>
+    </div>
+    <div style="background:rgba(212,168,67,0.06);border:1px solid rgba(212,168,67,0.15);border-radius:12px;padding:12px;margin-bottom:16px;font-size:0.72rem;color:#a0a0a0;line-height:1.7;">
+      <strong style="color:#d4a843;">Get your free token:</strong><br>
+      1. Go to <strong style="color:#f0e6d0;">github.com/settings/tokens</strong><br>
+      2. Click <strong style="color:#f0e6d0;">Generate new token (classic)</strong><br>
+      3. Check <strong style="color:#f0e6d0;">✓ models:read</strong> permission<br>
+      4. Copy &amp; paste it below ✦
+    </div>
+    <input id="gh-token-input" type="password"
+      placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+      onkeydown="if(event.key===Enter)submitToken()"
+      style="width:100%;background:#242424;border:1.5px solid rgba(212,168,67,0.3);border-radius:12px;padding:12px 14px;color:#e8e8e8;font-family:JetBrains Mono,monospace;font-size:0.82rem;outline:none;margin-bottom:12px;box-sizing:border-box;">
+    <button onclick="submitToken()" style="width:100%;background:linear-gradient(135deg,#d4a843,#b8860b);border:none;border-radius:12px;padding:12px;color:#000;font-weight:700;font-size:0.88rem;cursor:pointer;margin-bottom:8px;font-family:Plus Jakarta Sans,sans-serif;">✦ Save Token &amp; Chat</button>
+    <div style="text-align:center;font-size:0.65rem;color:#666;">Token saved locally in your browser · Never sent anywhere except GitHub</div>
+  </div>
+</div>
 </body>
 </html>
